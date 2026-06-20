@@ -22,6 +22,12 @@ let userschema=new mongoose.Schema({
         required:[true,"enter password"],
         minlength:[6, "minimum six characters"],
         select:false ///. ithil select ennal  ee password ennath dataBase il nnu fetch cheythu edukkumbol varilla  ath false anell
+    },
+    systemuser:{
+        type:Boolean,
+        select:false,
+        default:false,
+        immutable:true
     }
 },{
     timestamps:true

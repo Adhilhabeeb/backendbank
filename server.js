@@ -23,6 +23,6 @@ app.use("/api/auth",auth)
 app.use("/api/accounts",authenticate,accountrouter)
 app.use("/api/transaction",authenticate,Transacrtionrouter)
 
-app.listen(5000,()=>{
-    console.log("server started on port 5000");
+app.listen(8080,()=>{
+    console.log("server started on port 8080");
 })
