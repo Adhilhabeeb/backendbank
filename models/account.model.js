@@ -39,32 +39,50 @@ let accountschema=new mongoose.Schema({
 accountschema.index({userid:1,status:1})
 accountschema.index({balance:1})
 
-accountschema.methods.getbalance= function(){
-
-let leadger= leagerModel.aggregate([
-    {
-$match:{account:this.userid}},
-{
-    $group:{
-
-        id:null,
-        totaldebit:{$sum:{$cond:[{$eq:["type", "debit"]},"amount",0]}},
-        totalcredit:{$sum:{$cond:[{$eq:["type", "credit"]},"amount",0]}},
-        transactions:{ $push:"$$ROOT"}
-
-
+accountschema.methods.getbalance=  async function(){
+const ledger = await leagerModel.aggregate([
+  {
+    $match: { account: this.userid }
+  },
+  {
+    $group: {
+      _id: null,
+      totaldebit: {
+        $sum: {
+          $cond: [
+            { $eq: ["$type", "debit"] },
+            "$amount",
+            0
+          ]
+        }
+      },
+      totalcredit: {
+        $sum: {
+          $cond: [
+            { $eq: ["$type", "credit"] },
+            "$amount",
+            0
+          ]
+        }
+      },
+      transactions: {
+        $push: "$$ROOT"
+      }
     }
-},{
-    $project:{
-        _id:0,
-        transactions:1,
-        balance:{$substract:["$totalcredit","$totaldebit"]}
+  },
+  {
+    $project: {
+      _id: 0,
+      transactions: 1,
+      balance: {
+        $subtract: ["$totalcredit", "$totaldebit"]
+      }
     }
-}
+  }
 ])
 
-console.log(leadger,"issleadggerrrr")
-return leadger
+console.log(ledger,"issleadggerrrr")
+return ledger
 }
 let Accountmodel=await mongoose.model("accounts",accountschema)
 export default Accountmodel

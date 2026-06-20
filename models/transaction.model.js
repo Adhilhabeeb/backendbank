@@ -6,13 +6,13 @@ fromaccount:{
     type:mongoose.Schema.Types.ObjectId,
     ref:"accounts",
     required:[true,"the fromaccount must be associated with users"],
-    unique:true
+    
 },
 toaccount:{
      type:mongoose.Schema.Types.ObjectId,
     ref:"accounts",
     required:[true,"the fromaccount must be associated with users"],
-    unique:true
+
 },
 amount:{
     type:Number,

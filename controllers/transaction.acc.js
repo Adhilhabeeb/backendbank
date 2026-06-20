@@ -15,17 +15,17 @@ import leagerModel from "../models/leager.model.js";
   idempotencykey
 } = req.body;
  
-    res.json({message:"transaction created",data:transactionpropteries})
-if (!fromaccount || !toaccount || !amount || !idempotencykey) {
+    
+if (  !toaccount || !amount || !idempotencykey) {
   return res.status(400).json({
     success: false,
     message: "All fields are required"
   });
 }
 //checkaccunt fond 
-let fromaaccfound=await Accountmodel.findById(req.user._id)
-let toaccountfoud=await Accountmodel.findById(toaccount)
-
+let fromaaccfound=await Accountmodel.findOne({userid:req.user._id})
+let toaccountfoud=await Accountmodel.findOne({userid:toaccount})
+console.log(fromaaccfound,"andddn",toaccountfoud)
 if (!fromaaccfound) {
   return res.status(404).json({
     success: false,
@@ -42,22 +42,22 @@ if (!toaccountfoud) {
 
 let transactionexist= await transactionModel.findOne({idempotencykey:idempotencykey})
 
-if(transactionexist.status=="success"){
+if(transactionexist?.status=="success"){
     return res.status(400).json({
         success:false,
         message:"Transaction already proceed"
     })
-} else if (transactionexist.status=="pending") {
+} else if (transactionexist?.status=="pending") {
     return res.status(400).json({
         success:false,
         message:"Transaction already pending"
     })
-}else if (transactionexist.status=="failed") {
+}else if (transactionexist?.status=="failed") {
     return res.status(400).json({
         success:false,
         message:"Transaction already failed"
     })
-}else if(transactionexist.status=="reversed"){
+}else if(transactionexist?.status=="reversed"){
      
     res.status(500).json({
         success:false,
@@ -92,8 +92,11 @@ return res.status(400).json({
 let session=await mongoose.startSession()
 session.startTransaction()
 let transaction= await transactionModel.create({
-  fromaccount:fromaaccfound._id,toaccount:toaccountfoud._id,
-  amount,status:"pending",idempotencykey:idempotencykey
+  fromaccount:fromaaccfound._id,
+  toaccount:toaccountfoud._id,
+  amount
+  ,status:"pending",
+  idempotencykey:idempotencykey
   
 })
 
